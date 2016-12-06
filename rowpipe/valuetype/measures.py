@@ -103,6 +103,7 @@ class PercentageVT(FloatMeasure):
 
 measure_value_types = {
     "measure": FloatMeasure,
+    "measure/float": FloatMeasure,
     "measure/int": IntMeasure,
     "measure/long": LongMeasure,
     "density": ArealDensityVT,

@@ -15,7 +15,7 @@ from six import iteritems, itervalues, string_types, u
 
 from ambry_sources import RowProxy
 #from ambry.identity import PartialPartitionName
-#from ambry.util import qualified_class_name
+from rowpipe.util import qualified_class_name
 
 
 class PipelineError(Exception):

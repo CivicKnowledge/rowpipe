@@ -18,7 +18,7 @@ def cast_float(v):
     return float(v)
 
 
-class Test(unittest):
+class Test(unittest.TestCase):
 
 
     def test_sample_head(self):
@@ -55,6 +55,8 @@ class Test(unittest):
         pl.run()
 
         self.assertEquals(10, len(pl[PrintRows].rows))
+
+        print pl
 
     def test_select(self):
 
@@ -123,6 +125,8 @@ class Test(unittest):
 
         pl.run()
 
+
+
         self.assertEquals([1, 0, 1, 2, 10, 11, 12, 9, 19], pl[PrintRows].rows[0])
         self.assertEquals(
             ['col0', 'col1', 'col2', 'col10', 'col11', 'col12', 'col9', 'col19'],
@@ -149,25 +153,10 @@ class Test(unittest):
         # Sample
         pl = Pipeline(last=PrintRows(count=50))
 
+
         pl.run(source_pipes=[Source(0), Source(10), Source(20)])
 
         self.assertIn([0, 2], pl[PrintRows].rows)
         self.assertIn([10, 18], pl[PrintRows].rows)
         self.assertIn([20, 21], pl[PrintRows].rows)
 
-    def test_source_file_pipe(self):
-        l = self.library()
-        l.clean()
-
-        b = self.import_single_bundle('ingest.example.com/variety')
-
-        for s in b.sources:
-            if s.start_line == 0:
-                continue
-            b.ingest(sources=[s])
-
-            sf, sp = b._iterable_source(s)
-            rows = []
-            for row in islice(sp, 10):
-                rows.append(row)
-            self.assertEqual(len(rows), 10)

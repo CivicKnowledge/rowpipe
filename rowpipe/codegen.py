@@ -72,39 +72,157 @@ class CodeGenError(Exception):
     pass
 
 
-def make_env(bundle, base_env):
-    def _ff(code):
+def exec_context(**kwargs):
+    """Base environment for evals, the stuff that is the same for all evals. Primarily used in the
+    Caster pipe"""
+    import sys
+    import inspect
+    import dateutil.parser
+    import datetime
+    import random
+    from functools import partial
+    from rowpipe.valuetype.types import parse_date, parse_time, parse_datetime
+    import rowpipe.valuetype.types
+    import rowpipe.valuetype.exceptions
+    import rowpipe.valuetype.test
+    import rowpipe.valuetype
+
+    def set_from(f, frm):
         try:
-            return base_env.get(code, None)
-        except (AttributeError, KeyError):
-            return None
+            try:
+                f.ambry_from = frm
+            except AttributeError:  # for instance methods
+                f.im_func.ambry_from = frm
+        except (TypeError, AttributeError):  # Builtins, non python code
+            pass
 
-    return _ff
+        return f
+
+    test_env = dict(
+        parse_date=parse_date,
+        parse_time=parse_time,
+        parse_datetime=parse_datetime,
+        partial=partial
+    )
+
+    test_env.update(kwargs)
+    test_env.update(dateutil.parser.__dict__)
+    test_env.update(datetime.__dict__)
+    test_env.update(random.__dict__)
+    test_env.update(rowpipe.valuetype.core.__dict__)
+    test_env.update(rowpipe.valuetype.types.__dict__)
+    test_env.update(rowpipe.valuetype.exceptions.__dict__)
+    test_env.update(rowpipe.valuetype.test.__dict__)
+    test_env.update(rowpipe.valuetype.__dict__)
+
+    localvars = {}
+
+    for f_name, func in test_env.items():
+        if not isinstance(func, (str, tuple)):
+            localvars[f_name] = set_from(func, 'env')
+
+    # The 'b' parameter of randint is assumed to be a bundle, but
+    # replacing it with a lambda prevents the param assignment
+    localvars['randint'] = lambda a, b: random.randint(a, b)
+
+    # Save this stuff for when we re-integrate with bundles.
+    if False:
+        # Functions from the bundle
+        base = set(inspect.getmembers(Bundle, predicate=inspect.isfunction))
+        mine = set(inspect.getmembers(self.__class__, predicate=inspect.isfunction))
+
+        localvars.update({f_name: set_from(func, 'bundle') for f_name, func in mine - base})
+
+        # Bound methods. In python 2, these must be called referenced from the bundle, since
+        # there is a difference between bound and unbound methods. In Python 3, there is no differnce,
+        # so the lambda functions may not be necessary.
+        base = set(inspect.getmembers(Bundle, predicate=inspect.ismethod))
+        mine = set(inspect.getmembers(self.__class__, predicate=inspect.ismethod))
+
+        # Functions are descriptors, and the __get__ call binds the function to its object to make a bound method
+        localvars.update({f_name: set_from(func.__get__(self), 'bundle') for f_name, func in (mine - base)})
+
+    # Bundle module functions
+    if False:  # Load things that had been loaded with the bundle
+        module_entries = inspect.getmembers(sys.modules['ambry.build'], predicate=inspect.isfunction)
+        localvars.update({f_name: set_from(func, 'module') for f_name, func in module_entries})
+
+    return localvars
+
+def build_caster_code(source, dest_table, source_headers, cache = None, pipe=None):
+    from fs.wrapfs.lazyfs import LazyFS
+    import os
+    from rowpipe.codegen import make_row_processors
+
+    if cache is None:
+        import tempfile
+        from fs import fsopendir
+        #cache = fsopendir(tempfile.gettempdir())
+        cache = fsopendir('/tmp/rowpipe', createdir=True)
+
+    path = '/code/casters/{}.py'.format(source.name)
+
+    cache.makedir(os.path.dirname(path), allow_recreate=True, recursive=True)
+
+    env_dict = exec_context()
+    env_dict['source'] = source
+    env_dict['pipe'] = pipe
+
+    code = make_row_processors(source_headers, dest_table, env=env_dict)
+
+    # LazyFS should handled differently because of:
+    # TypeError: lazy_fs.setcontents(..., encoding='utf-8') got an unexpected keyword argument 'encoding'
+    if isinstance(cache, LazyFS):
+        cache.wrapped_fs.setcontents(path, code, encoding='utf8')
+    else:
+        cache.setcontents(path, code, encoding='utf8')
+
+    # The abs_path is just for reporting line numbers in debuggers, etc.
+    try:
+        abs_path = cache.getsyspath(path)
+    except:
+        abs_path = '<string>'
 
 
-def make_row_processors(bundle, source_headers, dest_table, env):
+    exec (compile(code, abs_path, 'exec'), env_dict)
+
+    return env_dict['row_processors']
+
+
+def make_row_processors(source_headers, dest_table, env=None):
     """
     Make multiple row processors for all of the columns in a table.
 
     :param source_headers:
+    :param dest_table:
+    :param env:
 
     :return:
     """
 
-    dest_headers = [c.name for c in dest_table.columns]
+    import six
+
+    if env is None:
+        env = exec_context()
+
+    assert len(dest_table.columns) > 0
+
+    # Convert the transforms to a list of list, with each list being a
+    # segment of column transformations, and each segment having one entry per column.
+
+    transforms = list(six.moves.zip_longest(*[c.expanded_transform for c in dest_table]))
 
     row_processors = []
 
     out = [file_header]
 
-    transforms = list(dest_table.transforms)
     column_names = []
     column_types = []
     for i, segments in enumerate(transforms):
 
         seg_funcs = []
 
-        for col_num, (segment, column) in enumerate(zip(segments, dest_table.columns), 1):
+        for col_num, (segment, column) in enumerate(zip(segments, dest_table), 1):
 
             if not segment:
                 seg_funcs.append('row[{}]'.format(col_num - 1))
@@ -114,8 +232,6 @@ def make_row_processors(bundle, source_headers, dest_table, env):
             assert column.name == segment['column'].name
             col_name = column.name
             preamble, try_lines, exception = make_stack(env, i, segment)
-
-            assert col_num == column.sequence_id, (dest_table.name, col_num, column.sequence_id)
 
             column_names.append(col_name)
             column_types.append(column.datatype)
@@ -142,7 +258,6 @@ def make_row_processors(bundle, source_headers, dest_table, env):
                 header_s = None
                 v = 'None' if col_num > 1 else 'row_n'  # Give the id column the row number
 
-            i_d = column.sequence_id - 1
 
             header_d = column.name
 
@@ -152,7 +267,7 @@ def make_row_processors(bundle, source_headers, dest_table, env):
                 column_name=col_name,
                 stage=i,
                 i_s=i_s,
-                i_d=i_d,
+                i_d=col_num,
                 header_s=header_s,
                 header_d=header_d,
                 v=v,
@@ -164,14 +279,12 @@ def make_row_processors(bundle, source_headers, dest_table, env):
             seg_funcs.append(f_name
                              + ('({v}, {i_s}, {i_d}, {header_s}, \'{header_d}\', '
                                 'row, row_n, errors, scratch, accumulator, pipe, bundle, source)')
-                             .format(v=v, i_s=i_s, i_d=i_d, header_s="'" + header_s + "'" if header_s else 'None',
+                             .format(v=v, i_s=i_s, i_d=col_num, header_s="'" + header_s + "'" if header_s else 'None',
                                      header_d=header_d))
 
             out.append('\n'.join(preamble))
 
             out.append(column_template.format(**template_args))
-
-        source_headers = dest_headers
 
         stack = '\n'.join("{}{}, # {}".format(indent, l, cn)
                           for l, cn, dt in zip(seg_funcs, column_names, column_types))
@@ -186,8 +299,8 @@ def make_row_processors(bundle, source_headers, dest_table, env):
 
     # Add the final datatype cast, which is done seperately to avoid an unecessary function call.
 
-    stack = '\n'.join("{}cast_{}(row[{}], '{}', errors),".format(indent, c.datatype, i, c.name)
-                      for i, c in enumerate(dest_table.columns))
+    stack = '\n'.join("{}cast_{}(row[{}], '{}', errors),".format(indent, c.datatype.__name__, i, c.name)
+                      for i, c in enumerate(dest_table))
 
     out.append(row_template.format(
         table=dest_table.name,
