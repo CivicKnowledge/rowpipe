@@ -2,3 +2,5 @@
 pyfs
 requests
 petl
+git+https://github.com/CivicKnowledge/tableintuit.git
+git+https://github.com/CivicKnowledge/rowgenerators.git

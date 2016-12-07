@@ -17,6 +17,10 @@ class Table(object):
     def add_column(self, name, datatype=None, valuetype=None, transform=None):
         self.columns.append(Column(name, datatype, valuetype, transform))
 
+    @property
+    def headers(self):
+        return [c.name for c in self.columns]
+
 
     def __iter__(self):
 

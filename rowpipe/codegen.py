@@ -38,8 +38,8 @@ col_args_t = """col_args = dict(v=v, i_s=i_s, i_d=i_d, header_s=header_s, header
               row=row, row_n=row_n)"""
 
 file_header = """
-
-from ambry.valuetype import resolve_value_type
+from six import string_types
+from rowpipe.valuetype import resolve_value_type
 
 """
 
@@ -52,6 +52,7 @@ def {f_name}(v, i_s, i_d, header_s, header_d, row, row_n, errors, scratch, accum
 {stack}
 
     except Exception as exc:
+
 {exception}
 
     return v
@@ -245,7 +246,7 @@ def make_row_processors(source_headers, dest_table, env=None):
             exception = (exception if exception else
                          ('raise ValueError("Failed to cast column \'{}\', in '
                           'function {}, value \'{}\': {}".format(header_d,"') + f_name +
-                         '", v.encode(\'ascii\', \'replace\'), exc) ) ')
+                         '", v.encode(\'ascii\', \'replace\') if  isinstance(v, string_types) else v, exc) ) ')
 
             try:
                 i_s = source_headers.index(column.name)
@@ -318,7 +319,7 @@ def make_row_processors(source_headers, dest_table, env=None):
 def calling_code(f, f_name=None, raise_for_missing=True):
     """Return the code string for calling a function. """
     import inspect
-    from ambry.dbexceptions import ConfigurationError
+    from rowpipe.exceptions import ConfigurationError
 
     if inspect.isclass(f):
         try:
@@ -351,7 +352,7 @@ def make_stack(env, stage, segment):
 
     import string
     import random
-    from ambry.valuetype import ValueType
+    from rowpipe.valuetype import ValueType
 
     column = segment['column']
 
@@ -453,7 +454,7 @@ class ReplaceTG(ast.NodeTransformer):
     def visit_Call(self, node):
 
         import inspect
-        from ambry.valuetype.types import is_transform_generator
+        from rowpipe.valuetype.types import is_transform_generator
         import types
 
         if not isinstance(node.func, ast.Name):
