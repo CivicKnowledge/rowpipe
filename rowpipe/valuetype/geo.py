@@ -7,15 +7,14 @@ the Revised BSD License, included in this distribution as LICENSE.txt
 """
 
 from core import *
-import six
-import re
+
 import geoid
 import geoid.census
 import geoid.acs
 import geoid.civick
 import geoid.tiger
-from ambry.valuetype import TextValue, FailedValue
-from ambry.valuetype.dimensions import StrDimension
+from rowpipe.valuetype import FailedValue
+from rowpipe.valuetype.dimensions import StrDimension
 
 
 class FailedGeoid(FailedValue):
