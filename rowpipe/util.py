@@ -36,3 +36,14 @@ def memoize(obj):
         return cache[key]
 
     return memoizer
+
+class Constant:
+    """Organizes constants in a class."""
+
+    class ConstError(TypeError):
+        pass
+
+    def __setattr__(self, name, value):
+        if name in self.__dict__:
+            raise self.ConstError("Can't rebind const(%s)" % name)
+        self.__dict__[name] = value

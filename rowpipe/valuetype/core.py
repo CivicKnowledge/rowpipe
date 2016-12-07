@@ -10,8 +10,8 @@ from six import text_type
 from six import string_types
 from datetime import date, time, datetime
 from decorator import decorator
-from ambry.util import Constant
-from ambry.valuetype.exceptions import TooManyCastingErrors
+from rowpipe.util import Constant
+from rowpipe.exceptions import TooManyCastingErrors
 
 ROLE = Constant()
 ROLE.DIMENSION = 'd'

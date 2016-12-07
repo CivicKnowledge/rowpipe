@@ -7,3 +7,6 @@
 
 class ConfigurationError(Exception):
     pass
+
+class TooManyCastingErrors(BuildError):
+    pass
