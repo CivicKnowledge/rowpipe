@@ -14,8 +14,7 @@ from tabulate import tabulate
 import six
 from six import iteritems, itervalues, string_types, u
 
-from ambry_sources import RowProxy
-#from ambry.identity import PartialPartitionName
+from rowgenerators import RowProxy
 from rowpipe.util import qualified_class_name
 
 
