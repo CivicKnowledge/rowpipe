@@ -1,4 +1,3 @@
-
 pyfs
 tabulate
 decorator
@@ -6,5 +5,5 @@ geoid
 meta
 six
 python-dateutil
-git+https://github.com/CivicKnowledge/tableintuit.git
-git+https://github.com/CivicKnowledge/rowgenerators.git
+git+https://github.com/CivicKnowledge/tableintuit.git#egg=tableintuit
+git+https://github.com/CivicKnowledge/rowgenerators.git#egg=rowgenerators

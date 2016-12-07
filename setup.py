@@ -47,7 +47,6 @@ classifiers = [
 ]
 
 
-
 setup(
     name='rowpipe',
     version=ambry_meta.__version__,

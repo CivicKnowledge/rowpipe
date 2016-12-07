@@ -36,9 +36,9 @@ class RowProcessor(Source):
 
         self.code = make_row_processors(source.headers, dest_table, env=env)
 
-        path = self.write_code()
+        self.code_path = self.write_code()
 
-        exec (compile(self.code, path, 'exec'), self.env)
+        exec (compile(self.code, self.code_path, 'exec'), self.env)
 
         self.procs = self.env['row_processors']
 

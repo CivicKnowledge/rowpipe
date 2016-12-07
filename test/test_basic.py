@@ -20,6 +20,7 @@ class TestBasic(unittest.TestCase):
         for c in t:
             print c
 
+    # NOTE. This speed test is about 23x faster running in PyPy than CPython
     def test_transform(self):
 
         from rowpipe.table import Table
@@ -35,17 +36,17 @@ class TestBasic(unittest.TestCase):
 
         t = Table('foobar')
         t.add_column('id', datatype='int')
-        t.add_column('other_id', datatype='int', transform='^row.i1')
-        t.add_column('i1', datatype='int', transform='doubleit')
-        t.add_column('f1', datatype='float', transform='doubleit')
-        t.add_column('i2', datatype='int', transform=';row.i1')
-        t.add_column('f2', datatype='float', transform=';row.f1')
+        t.add_column('other_id', datatype='int', transform='^row.a')
+        t.add_column('i1', datatype='int', transform='^row.a;doubleit')
+        t.add_column('f1', datatype='float', transform='^row.b;doubleit')
+        t.add_column('i2', datatype='int', transform='^row.a')
+        t.add_column('f2', datatype='float', transform='^row.b')
 
-        N = 100000
+        N = 10
 
         class Source(object):
 
-            headers = 'i1 f1'.split()
+            headers = 'a b'.split()
 
             def __iter__(self):
                 for i in range(N):
@@ -59,6 +60,7 @@ class TestBasic(unittest.TestCase):
             for row in rp:
                 count += 1
                 sum += row[0]
+                print row
 
         print 'Rate=', float(N) / t.elapsed
 

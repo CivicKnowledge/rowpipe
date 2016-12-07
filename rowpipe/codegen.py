@@ -201,7 +201,10 @@ def make_row_processors(source_headers, dest_table, env=None):
     :return:
     """
 
+
+
     import six
+    import re
 
     if env is None:
         env = exec_context()
@@ -239,7 +242,7 @@ def make_row_processors(source_headers, dest_table, env=None):
 
             f_name = "{table_name}_{column_name}_{stage}".format(
                 table_name=dest_table.name,
-                column_name=col_name,
+                column_name=re.sub(r'[^\w]+','_',col_name,),
                 stage=i
             )
 
@@ -249,12 +252,17 @@ def make_row_processors(source_headers, dest_table, env=None):
                          '", v.encode(\'ascii\', \'replace\') if  isinstance(v, string_types) else v, exc) ) ')
 
             try:
-                i_s = source_headers.index(column.name)
-                header_s = column.name
+                if i == 0:
+                    i_s = source_headers.index(column.name)
+                    header_s = column.name
+
+                else:
+                    i_s = col_num
+                    header_s = None
+
                 v = 'row[{}]'.format(i_s)
 
             except ValueError as e:
-
                 i_s = 'None'
                 header_s = None
                 v = 'None' if col_num > 1 else 'row_n'  # Give the id column the row number
@@ -336,6 +344,11 @@ def calling_code(f, f_name=None, raise_for_missing=True):
     for a in args:
         if a not in all_args + ('exception',):  # exception arg is only for exception handlers
             if raise_for_missing:
+                # In CPython, inspecting __init__ for IntMeasure, FloatMeasure, etc,
+                # raises a TypeError 12 lines up, but that does not happen in PyPy. This hack
+                # raises the TypeError.
+                if a == 'obj':
+                    raise TypeError()
                 raise ConfigurationError('Caster code {} has unknown argument '
                                          'name: \'{}\'. Must be one of: {} '.format(f, a, ','.join(all_args)))
 
@@ -365,7 +378,7 @@ def make_stack(env, stage, segment):
 
             try:
                 cc, fl = calling_code(t, t.__name__), file_loc()
-            except TypeError:
+            except TypeError as e:
                 cc, fl = "{}(v)".format(t.__name__), file_loc()
 
             preamble.append("{} = resolve_value_type('{}') # {}".format(t.__name__, t.vt_code, fl))

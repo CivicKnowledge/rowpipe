@@ -7,6 +7,7 @@ Tables and columns
 """
 
 from rowpipe.valuetype import resolve_value_type
+from tabulate import tabulate
 
 class Table(object):
 
@@ -26,6 +27,14 @@ class Table(object):
 
         for c in self.columns:
             yield c
+
+    def __str__(self):
+
+        headers = 'name datatype valuetype transform'.split()
+        rows = [(c.name, c.datatype.__name__, c.valuetype.__name__, c.transform) for c in self.columns]
+
+        return ('Table: {}\n'.format(self.name)) + tabulate(rows, headers)
+
 
 class Column(object):
 
@@ -70,6 +79,16 @@ class Column(object):
                 .format(name=self.name, datatype=self.datatype.__name__, valuetype=self.valuetype.__name__,
                         transform=self.transform)
 
+
+    @property
+    def dict(self):
+        return dict(
+            name=self.name,
+            datatype=self.datatype,
+            valuetype=self.valuetype,
+            transform=self.transform
+
+        )
 
     @staticmethod
     def make_xform_seg(init_=None, datatype=None, transforms=None, exception=None, column=None):
