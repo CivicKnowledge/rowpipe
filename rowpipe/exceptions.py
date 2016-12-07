@@ -8,5 +8,5 @@
 class ConfigurationError(Exception):
     pass
 
-class TooManyCastingErrors(BuildError):
+class TooManyCastingErrors(Exception):
     pass
