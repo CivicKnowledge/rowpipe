@@ -6,9 +6,7 @@ Copyright (c) 2015 Civic Knowledge. This file is licensed under the terms of
 the Revised BSD License, included in this distribution as LICENSE.txt
 
 """
-from six import text_type
-from datetime import date, time, datetime
-
+import six
 from rowpipe.util import memoize
 
 from core import *

@@ -3,5 +3,7 @@ pyfs
 tabulate
 decorator
 geoid
+meta
+six
 git+https://github.com/CivicKnowledge/tableintuit.git
 git+https://github.com/CivicKnowledge/rowgenerators.git
