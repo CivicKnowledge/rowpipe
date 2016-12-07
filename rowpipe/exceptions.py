@@ -5,8 +5,11 @@
 
 """
 
-class ConfigurationError(Exception):
+from valuetype.exceptions import TooManyCastingErrors
+
+class RowPipeError(Exception):
     pass
 
-class TooManyCastingErrors(Exception):
+class ConfigurationError(RowPipeError):
     pass
+
