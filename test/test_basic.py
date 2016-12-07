@@ -1,7 +1,7 @@
 import unittest
 
 
-class MyTestCase(unittest.TestCase):
+class TestBasic(unittest.TestCase):
 
 
     def test_table(self):
@@ -25,6 +25,7 @@ class MyTestCase(unittest.TestCase):
         from rowpipe.table import Table
         from rowpipe.processor import RowProcessor
         from contexttimer import Timer
+
         def doubleit(v):
             return int(v) * 2
 
@@ -59,7 +60,7 @@ class MyTestCase(unittest.TestCase):
                 count += 1
                 sum += row[0]
 
-        print 'Rate=', float(N) / t.elapsed 
+        print 'Rate=', float(N) / t.elapsed
 
 if __name__ == '__main__':
     unittest.main()
