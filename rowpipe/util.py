@@ -1,5 +1,6 @@
 
 
+from functools import  wraps
 
 def qualified_class_name(o):
     """Full name of an object, including the module"""
@@ -23,3 +24,15 @@ def qualified_name_import(cls):
 
     return "from {} import {}".format('.'.join(parts[:-1]), parts[-1])
 
+# From https://wiki.python.org/moin/PythonDecoratorLibrary#Memoize
+def memoize(obj):
+    cache = obj.cache = {}
+
+    @wraps(obj)
+    def memoizer(*args, **kwargs):
+        key = str(args) + str(kwargs)
+        if key not in cache:
+            cache[key] = obj(*args, **kwargs)
+        return cache[key]
+
+    return memoizer

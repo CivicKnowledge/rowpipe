@@ -9,7 +9,7 @@ the Revised BSD License, included in this distribution as LICENSE.txt
 from six import text_type
 from datetime import date, time, datetime
 
-from ambry.util import Constant, memoize
+from rowpipe.util import  memoize
 
 from core import *
 from times import *
