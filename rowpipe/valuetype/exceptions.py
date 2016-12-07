@@ -4,8 +4,7 @@ Functions for handling exceptions
 
 """
 
-import textwrap
-from rowpipe.exceptions import RowPipeError
+from rowpipe.exceptions import *
 
 def clear_error(v):
     from ambry.valuetype import FailedValue
@@ -13,25 +12,6 @@ def clear_error(v):
     if isinstance(v, FailedValue):
         return None
     return v
-
-
-class CastingError(RowPipeError):
-
-    def __init__(self, type_target, field_header, value, message, *args, **kwargs):
-
-        self.type_target = type_target
-        self.field_header = field_header
-        self.value = value
-
-        message = "Failed to cast column '{}' value='{}' to '{}': {} "\
-            .format(field_header, value, type_target, message)
-
-        # Call the base class constructor with the parameters it needs
-        Exception.__init__(self, textwrap.fill(message, 120), *args, **kwargs)
-
-class TooManyCastingErrors(RowPipeError):
-    pass
-
 
 def try_except( try_f, except_f):
     """Takes 2 closures and executes them in a try / except block """

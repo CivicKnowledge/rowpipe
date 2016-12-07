@@ -5,11 +5,28 @@
 
 """
 
-from valuetype.exceptions import TooManyCastingErrors
+import textwrap
 
 class RowPipeError(Exception):
     pass
 
+
 class ConfigurationError(RowPipeError):
     pass
 
+class CastingError(RowPipeError):
+
+    def __init__(self, type_target, field_header, value, message, *args, **kwargs):
+
+        self.type_target = type_target
+        self.field_header = field_header
+        self.value = value
+
+        message = "Failed to cast column '{}' value='{}' to '{}': {} "\
+            .format(field_header, value, type_target, message)
+
+        # Call the base class constructor with the parameters it needs
+        Exception.__init__(self, textwrap.fill(message, 120), *args, **kwargs)
+
+class TooManyCastingErrors(RowPipeError):
+    pass
