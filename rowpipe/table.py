@@ -83,7 +83,7 @@ class Column(object):
 
     @staticmethod
     def _expand_transform_to_segments(transform):
-        from ambry.dbexceptions import ConfigurationError
+        from .exceptions import ConfigurationError
 
         if not bool(transform):
             return []
