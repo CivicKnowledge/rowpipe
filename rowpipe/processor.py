@@ -14,11 +14,12 @@ class RowProcessor(Source):
     """
     """
 
-    def __init__(self, source, dest_table, env=None):
+    def __init__(self, source, dest_table, source_headers=None, env=None):
 
         super(RowProcessor, self).__init__(None)
 
         self.source = source
+        self.source_headers = source_headers if source_headers is not None else self.source.headers
         self.dest_table = dest_table
 
         self.env = exec_context()
@@ -34,7 +35,7 @@ class RowProcessor(Source):
         self.accumulator = {}
         self.errors = {}
 
-        self.code = make_row_processors(source.headers, dest_table, env=env)
+        self.code = make_row_processors(self.source_headers, self.dest_table, env=self.env)
 
         self.code_path = self.write_code()
 
@@ -64,7 +65,7 @@ class RowProcessor(Source):
         or shapefiles. For other files, like CSV and Excel, the header row can not be determined without analysis
         or specification."""
 
-        return None
+        return self.dest_table.headers
 
     @headers.setter
     def headers(self, v):
@@ -82,7 +83,7 @@ class RowProcessor(Source):
         bundle = self.env['bundle']
         pipe = self.env['pipe']
 
-        rp1 = RowProxy(self.source.headers) # The first processor step uses the source row structure
+        rp1 = RowProxy(self.source_headers) # The first processor step uses the source row structure
         rp2 = RowProxy(self.dest_table.headers) # Subsequent steps use the dest table
 
         for i, row in enumerate(self.source):
