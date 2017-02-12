@@ -60,7 +60,7 @@ def clean_float(v):
     if v is None or not str(v).strip():
         return None
 
-    return float(str(v).replace(',', ''))
+    return float(str(v).replace(',', '').replace(' ',''))
 
 
 def clean_int(v):
@@ -69,7 +69,7 @@ def clean_int(v):
     if v is None or not str(v).strip():
         return None
 
-    return int(str(v).replace(',', ''))
+    return int(str(v).replace(',', '').replace(' ',''))
 
 
 #

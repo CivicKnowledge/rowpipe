@@ -1,9 +1,0 @@
-pyfs
-tabulate
-decorator
-geoid
-meta
-six
-python-dateutil
--e git+https://github.com/CivicKnowledge/tableintuit.git#egg=tableintuit
--e git+https://github.com/CivicKnowledge/rowgenerators.git#egg=rowgenerators

@@ -6,7 +6,7 @@ the Revised BSD License, included in this distribution as LICENSE.txt
 
 """
 
-from core import *
+from .core import *
 
 class ErrorVT(ValueType):
     role = ROLE.ERROR

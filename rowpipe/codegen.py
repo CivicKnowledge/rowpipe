@@ -8,7 +8,7 @@
 
 import ast
 import meta # Byte-code and ast programming tools
-
+import six
 
 def file_loc():
     """Return file and line number"""
@@ -201,8 +201,6 @@ def make_row_processors(source_headers, dest_table, env=None):
     :return:
     """
 
-
-
     import six
     import re
 
@@ -331,15 +329,22 @@ def calling_code(f, f_name=None, raise_for_missing=True):
 
     if inspect.isclass(f):
         try:
-            args = inspect.getargspec(f.__init__).args
+
+            args = inspect.getargspec(f.__init__).args if six.PY2 \
+                else inspect.signature(f.__init__).parameters.keys()
         except TypeError as e:
             raise TypeError("Failed to inspect {}: {}".format(f, e))
 
     else:
-        args = inspect.getargspec(f).args
+        args = inspect.getargspec(f).args if six.PY2 \
+            else inspect.signature(f).parameters.keys()
 
     if len(args) > 1 and args[0] == 'self':
         args = args[1:]
+
+
+    if 'self' in args: # Python3 gets self, but not Python2
+        args.remove('self')
 
     for a in args:
         if a not in all_args + ('exception',):  # exception arg is only for exception handlers
@@ -349,6 +354,7 @@ def calling_code(f, f_name=None, raise_for_missing=True):
                 # raises the TypeError.
                 if a == 'obj':
                     raise TypeError()
+
                 raise ConfigurationError('Caster code {} has unknown argument '
                                          'name: \'{}\'. Must be one of: {} '.format(f, a, ','.join(all_args)))
 

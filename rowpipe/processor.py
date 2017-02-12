@@ -47,7 +47,7 @@ class RowProcessor(Source):
         import hashlib
         import os
 
-        path = '/tmp/rowprocessor/{}.py'.format(hashlib.md5(self.code).hexdigest())
+        path = '/tmp/rowprocessor/{}.py'.format(hashlib.md5(self.code.encode('utf-8')).hexdigest())
 
         if not os.path.exists(os.path.dirname(path)):
             os.makedirs(os.path.dirname(path))

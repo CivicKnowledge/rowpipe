@@ -25,7 +25,7 @@ with open(os.path.join(os.path.dirname(__file__), 'README.rst')) as f:
 
 # Avoiding import so we don't execute __init__.py, which has imports
 # that aren't installed until after installation.
-ambry_meta = imp.load_source('_meta', 'rowpipe/__meta__.py')
+ambry_meta = imp.load_source('_meta', 'rowpipe/_meta.py')
 
 packages = find_packages()
 
@@ -53,7 +53,17 @@ setup(
     description='Generate row data from a variety of file formats',
     long_description=readme,
     packages=packages,
-    install_requires=[x for x in reversed([str(x.req) for x in install_requires])],
+    install_requires = [
+        'pyfs',
+        'tabulate',
+        'decorator',
+        'codegen',
+        'geoid',
+        'meta',
+        'six',
+        'python-dateutil',
+        'tableintuit',
+        'rowgenerators'],
     author=ambry_meta.__author__,
     author_email='eric@civicknowledge.com',
     url='https://github.com/CivicKnowledge/rowgenerator.git',

@@ -7,6 +7,7 @@ Tables and columns
 """
 
 from rowpipe.valuetype import resolve_value_type
+from rowpipe.exceptions import SchemaError
 from tabulate import tabulate
 
 class Table(object):
@@ -47,6 +48,10 @@ class Column(object):
             self.valuetype = resolve_value_type(valuetype)
         elif datatype is not None:
             self.valuetype = resolve_value_type(datatype)
+
+        if self.valuetype is None:
+            raise SchemaError("Could not resovle type for datatype='{}' and valuetype='{}' ".format(datatype, valuetype))
+
 
         self.datatype = self.valuetype.python_type()
 

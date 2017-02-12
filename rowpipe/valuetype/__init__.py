@@ -9,13 +9,13 @@ the Revised BSD License, included in this distribution as LICENSE.txt
 import six
 from rowpipe.util import memoize
 
-from core import *
-from times import *
-from geo import *
-from dimensions import *
-from measures import *
-from errors import *
-from other import *
+from .core import *
+from .times import *
+from .geo import *
+from .dimensions import *
+from .measures import *
+from .errors import *
+from .other import *
 
 value_types = {
     "int": IntMeasure,

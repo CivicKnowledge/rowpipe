@@ -6,7 +6,7 @@ the Revised BSD License, included in this distribution as LICENSE.txt
 
 """
 from __future__ import print_function
-from six import text_type
+from six import text_type, PY3
 from six import string_types
 from datetime import date, time, datetime
 from decorator import decorator
@@ -336,6 +336,9 @@ class IntValue(int, ValueType):
 
             return FailedValue(v, e)
 
+
+if PY3:
+    long = int
 
 class LongValue(long, ValueType):
     _pythontype = long
