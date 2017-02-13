@@ -9,6 +9,7 @@ Row generating row processor
 
 from rowgenerators import Source
 from rowpipe.codegen import make_row_processors, exec_context
+from collections import defaultdict
 
 class RowProcessor(Source):
     """
@@ -33,7 +34,7 @@ class RowProcessor(Source):
 
         self.scratch = {}
         self.accumulator = {}
-        self.errors = {}
+        self.errors = defaultdict(set)
 
         self.code = make_row_processors(self.source_headers, self.dest_table, env=self.env)
 
