@@ -231,18 +231,23 @@ def make_row_processors(source_headers, dest_table, env=None):
                 continue
 
             assert column
+            assert column.name, (dest_table.name, i)
             assert column.name == segment['column'].name
+
             col_name = column.name
             preamble, try_lines, exception = make_stack(env, i, segment)
 
             column_names.append(col_name)
             column_types.append(column.datatype)
 
+            column_name = re.sub(r'[^\w]+', '_', col_name, )
+            table_name = re.sub(r'[^\w]+', '_', dest_table.name)
+
+            assert column_name, (dest_table.name, i, col_name)
+            assert table_name
+
             f_name = "{table_name}_{column_name}_{stage}".format(
-                table_name=dest_table.name,
-                column_name=re.sub(r'[^\w]+','_',col_name,),
-                stage=i
-            )
+                table_name=table_name, column_name=column_name,stage=i)
 
             exception = (exception if exception else
                          ('raise ValueError("Failed to cast column \'{}\', in '
@@ -297,25 +302,28 @@ def make_row_processors(source_headers, dest_table, env=None):
                           for l, cn, dt in zip(seg_funcs, column_names, column_types))
 
         out.append(row_template.format(
-            table=dest_table.name,
+            table=re.sub(r'[^\w]+', '_', dest_table.name),
             stage=i,
             stack=stack
         ))
 
-        row_processors.append('row_{table}_{stage}'.format(stage=i, table=dest_table.name))
+        row_processors.append('row_{table}_{stage}'.format(stage=i,
+                                                           table=re.sub(r'[^\w]+', '_', dest_table.name)))
 
     # Add the final datatype cast, which is done seperately to avoid an unecessary function call.
 
     stack = '\n'.join("{}cast_{}(row[{}], '{}', errors),".format(indent, c.datatype.__name__, i, c.name)
                       for i, c in enumerate(dest_table))
 
+
     out.append(row_template.format(
-        table=dest_table.name,
+        table=re.sub(r'[^\w]+', '_', dest_table.name),
         stage=len(transforms),
         stack=stack
     ))
 
-    row_processors.append('row_{table}_{stage}'.format(stage=len(transforms), table=dest_table.name))
+    row_processors.append('row_{table}_{stage}'.format(stage=len(transforms),
+                                                       table=re.sub(r'[^\w]+', '_', dest_table.name)))
 
     out.append('row_processors = [{}]'.format(','.join(row_processors)))
 
