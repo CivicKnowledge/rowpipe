@@ -5,7 +5,7 @@ Copyright (c) 2015 Civic Knowledge. This file is licensed under the terms of
 the Revised BSD License, included in this distribution as LICENSE.txt
 
 """
-
+import geoid.geoid.core
 from .core import *
 
 import geoid
@@ -36,7 +36,7 @@ class Geoid(StrDimension, GeoMixin):
         if v is None or (isinstance(v, string_types) and v.strip() == ''):
             return NoneValue
 
-        if isinstance(v, geoid.Geoid):
+        if isinstance(v, geoid.geoid.core.Geoid):
             o = StrDimension.__new__(cls, str(v))
             o.geoid = v
             return o
@@ -137,7 +137,7 @@ class GeoCensusVT(Geoid):
     @classmethod
     def subclass(cls, vt_code, vt_args):
         """Return a dynamic subclass that has the extra parameters built in"""
-        from geoid import get_class
+        from geoid.geoid.core import get_class
         import geoid.census
 
         parser = get_class(geoid.census, vt_args.strip('/')).parse

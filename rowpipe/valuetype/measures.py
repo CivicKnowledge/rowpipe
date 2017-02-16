@@ -99,8 +99,6 @@ class PercentageVT(FloatMeasure):
 
 
 
-
-
 measure_value_types = {
     "measure": FloatMeasure,
     "measure/float": FloatMeasure,
