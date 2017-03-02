@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import unittest
 
 
@@ -18,7 +20,7 @@ class TestBasic(unittest.TestCase):
         t.add_column('f3', valuetype='measure/float')
 
         for c in t:
-            print c
+            print(c)
 
     # NOTE. This speed test is about 23x faster running in PyPy than CPython
     def test_transform(self):
@@ -60,9 +62,9 @@ class TestBasic(unittest.TestCase):
             for row in rp:
                 count += 1
                 sum += row[0]
-                print row
+                print(row)
 
-        print 'Rate=', float(N) / t.elapsed
+        print('Rate=', float(N) / t.elapsed)
 
 if __name__ == '__main__':
     unittest.main()

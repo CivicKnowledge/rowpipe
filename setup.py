@@ -54,7 +54,7 @@ setup(
     long_description=readme,
     packages=packages,
     install_requires = [
-        'pyfs',
+        'fs',
         'tabulate',
         'decorator',
         'codegen',

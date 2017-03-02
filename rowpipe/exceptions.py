@@ -6,13 +6,33 @@
 """
 
 import textwrap
+import os
+import sys
 
 class RowPipeError(Exception):
     pass
 
-
 class ConfigurationError(RowPipeError):
     pass
+
+
+class CasterExceptionError(RowPipeError):
+
+    def __init__(self,  function, field_header, value,  exc, exec_info, *args, **kwargs):
+
+        exc_type, exc_obj, exc_tb = exec_info
+
+        fname = exc_tb.tb_frame.f_code.co_filename
+        linen = exc_tb.tb_lineno
+
+        message = "Failed to cast column '{}' value='{}' in function='{}', file='{}', line='{}' : {} "\
+            .format(field_header, value,  function,
+                    fname, linen,
+                    str(exc))
+
+        # Call the base class constructor with the parameters it needs
+        Exception.__init__(self, textwrap.fill(message, 120), *args, **kwargs)
+
 
 class CastingError(RowPipeError):
 

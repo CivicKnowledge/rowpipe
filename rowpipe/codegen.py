@@ -38,6 +38,7 @@ col_args_t = """col_args = dict(v=v, i_s=i_s, i_d=i_d, header_s=header_s, header
               row=row, row_n=row_n)"""
 
 file_header = """
+import sys
 from six import string_types
 from rowpipe.valuetype import resolve_value_type
 
@@ -249,10 +250,7 @@ def make_row_processors(source_headers, dest_table, env=None):
             f_name = "{table_name}_{column_name}_{stage}".format(
                 table_name=table_name, column_name=column_name,stage=i)
 
-            exception = (exception if exception else
-                         ('raise ValueError("Failed to cast column \'{}\', in '
-                          'function {}, value \'{}\': {}".format(header_d,"') + f_name +
-                         '", v.encode(\'ascii\', \'replace\') if  isinstance(v, string_types) else v, exc) ) ')
+            exception = (exception if exception else 'raise CasterExceptionError("'+f_name+'",header_d, v, exc, sys.exc_info())')
 
             try:
                 if i == 0:
