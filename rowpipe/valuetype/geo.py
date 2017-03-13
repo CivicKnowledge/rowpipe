@@ -6,16 +6,17 @@ the Revised BSD License, included in this distribution as LICENSE.txt
 
 """
 
-from .core import *
 
 import geoid
 import geoid.census
 import geoid.acs
 import geoid.civick
 import geoid.tiger
-from rowpipe.valuetype import FailedValue
-from rowpipe.valuetype.dimensions import StrDimension
+from six import string_types
+from rowpipe.valuetype import ( FailedValue, GeoMixin, IntDimension, FloatDimension, LabelValue, ROLE,
+                                NoneValue)
 
+from rowpipe.valuetype.dimensions import StrDimension
 
 class FailedGeoid(FailedValue):
     def __str__(self):

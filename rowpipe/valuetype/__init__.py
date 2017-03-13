@@ -11,7 +11,7 @@ from rowpipe.util import memoize
 
 from .core import *
 from .times import *
-from .geo import *
+from rowpipe.valuetype.geo import *
 from .dimensions import *
 from .measures import *
 from .errors import *
