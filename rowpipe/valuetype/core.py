@@ -48,8 +48,12 @@ def valuetype(func, *args, **kw):
 
 
 def count_errors(errors):
-    if sum(len(e) for e in errors.values()) > 50:
-        raise TooManyCastingErrors("Too many casting errors")
+
+    # Count at most 10 errors for each column
+    c = sum(len(e) if len(e) < 10 else 10 for e in errors.values())
+
+    if c > 50:
+        raise TooManyCastingErrors("Too many casting errors ({})".format(c), errors=errors)
 
 
 class TimeMixin(object):
@@ -203,7 +207,9 @@ class FailedValue(str, ValueType):
 
 
 def cast_int(v, header_d, errors):
+    from rowpipe.valuetype import IntMeasure
     if isinstance(v, FailedValue):
+
         errors[header_d].add(u"Failed to cast '{}' ({}) to int in '{}': {}".format(v, type(v), header_d, v.exc))
         count_errors(errors)
         return None
@@ -522,7 +528,10 @@ def robust_int(v):
     if not v:
         return None
 
-    return int(v)
+    try:
+        return int(v)
+    except ValueError:
+        return int(float(v))
 
 
 def print_value(row_n, header_d, v):

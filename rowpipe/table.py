@@ -48,9 +48,13 @@ class Column(object):
             self.valuetype = resolve_value_type(valuetype)
         elif datatype is not None:
             self.valuetype = resolve_value_type(datatype)
+        else:
+            self.valuetype = None
 
         if self.valuetype is None:
-            raise SchemaError("Could not resovle type for datatype='{}' and valuetype='{}' ".format(datatype, valuetype))
+            raise SchemaError("Could not resovle type for for column '{}' datatype='{}' and valuetype='{}' "
+                              .format(name, datatype, valuetype))
+
 
 
         self.datatype = self.valuetype.python_type()

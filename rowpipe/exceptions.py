@@ -48,8 +48,14 @@ class CastingError(RowPipeError):
         # Call the base class constructor with the parameters it needs
         Exception.__init__(self, textwrap.fill(message, 120), *args, **kwargs)
 
+
 class TooManyCastingErrors(RowPipeError):
-    pass
+
+    def __init__(self, *args, errors = None, **kwargs):
+        self.errors = errors if errors is not None else {}
+        Exception.__init__(self, *args, **kwargs)
+
+
 
 class SchemaError(RowPipeError):
     pass
