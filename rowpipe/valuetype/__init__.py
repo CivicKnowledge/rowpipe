@@ -23,7 +23,8 @@ value_types = {
     "float": FloatMeasure,
     "text": TextDimension,
     "str": StrDimension,
-    "unicode": TextDimension
+    "unicode": TextDimension,
+    "geometry": ShapeValue,
 }
 
 value_types.update(geo_value_types)

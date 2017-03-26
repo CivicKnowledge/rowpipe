@@ -292,6 +292,12 @@ def cast_text(v, header_d, errors):
 cast_unicode = cast_text
 
 
+def cast_object(v, header_d, errors):
+
+    return v
+
+
+
 class StrValue(str, ValueType):
     _pythontype = str
     desc = 'Character String'

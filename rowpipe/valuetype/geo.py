@@ -14,7 +14,7 @@ import geoid.civick
 import geoid.tiger
 from six import string_types
 from rowpipe.valuetype import ( FailedValue, GeoMixin, IntDimension, FloatDimension, LabelValue, ROLE,
-                                NoneValue)
+                                NoneValue, ValueType, LOM)
 
 from rowpipe.valuetype.dimensions import StrDimension
 
@@ -229,11 +229,39 @@ class CensusValue(IntDimension, GeoMixin):
     vt_code = 'geo/census'
 
 
-class WellKnownTextValue(IntDimension, GeoMixin):
+class WellKnownTextValue(StrDimension, GeoMixin):
     """Geographic shape in Well Known Text format"""
     role = ROLE.DIMENSION
     desc = 'Well Known Text'
     vt_code = 'wkt'
+
+
+# Not sure how to make this a general object, so it is a
+# single element tuple
+class ShapeValue(tuple, ValueType):
+    _pythontype = object
+    desc = 'Shape object'
+    vt_code = 'geometry'
+    lom = LOM.NOMINAL
+
+    def __new__(cls, v):
+
+        import shapely
+
+        if v is None or v is NoneValue or v == '':
+            return NoneValue
+
+        try:
+            return tuple.__new__(cls, [v])
+        except Exception as e:
+            return FailedValue(v, e)
+
+    @property
+    def shape(self):
+        return self[0]
+
+    def __str__(self):
+        return str(self.shape)
 
 
 class DecimalDegreesValue(FloatDimension, GeoMixin):
