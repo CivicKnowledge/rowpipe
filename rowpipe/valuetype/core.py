@@ -499,6 +499,12 @@ class LabelValue(TextDimension, LabelMixin):
     role = ROLE.DIMENSION
 
 
+def null():
+    return None
+
+def empty_str():
+    return ""
+
 def upper(v):
     if isinstance(v, (FailedValue, _NoneValue)):
         return v
