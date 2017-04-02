@@ -408,9 +408,9 @@ def make_stack(env, stage, segment):
             name = 'tg_{}_{}_{}'.format(column.name, stage, rnd)
             try:
                 a, b, fl = rewrite_tg(env, name, t)
-            except CodeGenError as e:
-                raise CodeGenError("Failed to re-write pipe code '{}' in column '{}.{}': {} "
-                                   .format(t, column.table.name, column.name, e))
+            except (CodeGenError, AttributeError) as e:
+                raise CodeGenError("Failed to re-write pipe code '{}' in column '{}': {} "
+                                   .format(t, column, e))
 
             cc = str(a)
 
@@ -563,7 +563,7 @@ class ReplaceTG(ast.NodeTransformer):
 
 
 def rewrite_tg(env, tg_name, code):
-    """Re-write a transform generating function pipe specification by extracting the tranform generating part,
+    """Re-write a transform generating function pipe specification by extracting the transform generating part,
     and replacing it with the generated transform. so:
 
        tgen(a,b,c).foo.bar
