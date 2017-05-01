@@ -1,7 +1,5 @@
-from itertools import islice
+from __future__ import print_function
 import unittest
-
-from fs.opener import fsopendir
 
 from rowpipe.pipeline import Pipeline, Pipe, PrintRows, Sample, Head, SelectRows, Slice
 
@@ -56,7 +54,7 @@ class Test(unittest.TestCase):
 
         self.assertEquals(10, len(pl[PrintRows].rows))
 
-        print pl
+        print(pl)
 
     def test_select(self):
 

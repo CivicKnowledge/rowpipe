@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from ambry.orm.column import Column
-import unittest
+from __future__ import print_function
 import unittest
 
 class Test(unittest.TestCase):
 
     def test_clean_transform(self):
-        from ambry.dbexceptions import ConfigurationError
 
         ct = Column.clean_transform
 
@@ -69,7 +67,7 @@ class Test(unittest.TestCase):
         x = cast_str(TextValue(None), 'foobar', {})
         self.assertEqual(None, x)
 
-        print cast_str(TextValue(None), 'foobar', {})
+        print (cast_str(TextValue(None), 'foobar', {}))
 
     def test_time(self):
 
@@ -169,9 +167,9 @@ class Test(unittest.TestCase):
         f.raise_for_error()
         self.assertTrue(f.is_none)
 
-        print f, type(f)
-        print cast_float(f, 'test', errors)
-        print cast_float(f, 'test', errors)
+        print(f, type(f))
+        print(cast_float(f, 'test', errors))
+        print(cast_float(f, 'test', errors))
 
         self.assertEqual(0, len(errors))
 
@@ -181,15 +179,15 @@ class Test(unittest.TestCase):
 
         self.assertFalse(f.is_none)
 
-        print f, type(f)
-        print cast_float(f, 'test', errors)
-        print cast_float(f, 'test', errors)
+        print(f, type(f))
+        print(cast_float(f, 'test', errors))
+        print(cast_float(f, 'test', errors))
 
-        print errors
+        print(errors)
 
     def test_failures(self):
 
-        from ambry.valuetype import StrValue, upper, NoneValue
+        from rowpipe.valuetype import StrValue, upper, NoneValue
 
         v = StrValue(None)
 
@@ -202,8 +200,8 @@ class Test(unittest.TestCase):
 
     def test_measures_errors(self):
 
-        import ambry.valuetype as vt
-        from ambry.valuetype import resolve_value_type
+        import rowpipe.valuetype as vt
+        from rowpipe.valuetype import resolve_value_type
 
         self.assertEqual('A standard error', vt.StandardErrorVT.__doc__)
 
@@ -212,6 +210,7 @@ class Test(unittest.TestCase):
         # Test on-the-fly classes. The class is returned for e/ci, but it created a new class
         # and the vt_code is set to e/ci/u/95
         t = resolve_value_type('ci/u/95')
+        self.assertIsNotNone(t)
         self.assertEqual(vt.ConfidenceIntervalHalfVT, resolve_value_type('ci'))
         self.assertEquals(12.34, float(t(12.34)))
         self.assertEqual('ci/u/95', t(12.34).vt_code)
@@ -236,6 +235,6 @@ class Test(unittest.TestCase):
         self.assertAlmostEqual(10.0, v.m95.se)
         self.assertAlmostEqual(10.0, v.m95.se)
 
-        print vt.RateVT(0)
-        print vt.RateVT(None)
+        print(vt.RateVT(0))
+        print(vt.RateVT(None))
 

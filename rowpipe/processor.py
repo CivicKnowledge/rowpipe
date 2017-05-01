@@ -17,6 +17,15 @@ class RowProcessor(Source):
 
     def __init__(self, source, dest_table, source_headers=None, env=None):
 
+        """
+
+        :param source: Row generating soruce
+        :param dest_table: Destination table
+        :param source_headers:
+        :param env:
+        :return:
+        """
+
         super(RowProcessor, self).__init__(None)
 
         self.source = source
@@ -47,8 +56,13 @@ class RowProcessor(Source):
     def write_code(self):
         import hashlib
         import os
+        import tempfile
 
-        path = '/tmp/rowprocessor/{}.py'.format(hashlib.md5(self.code.encode('utf-8')).hexdigest())
+        tf = tempfile.NamedTemporaryFile(prefix="rowprocessor-",
+                                         suffix='{}.py'.format(hashlib.md5(self.code.encode('utf-8')).hexdigest()),
+                                         delete=False)
+        path = tf.name
+        tf.close()
 
         if not os.path.exists(os.path.dirname(path)):
             os.makedirs(os.path.dirname(path))

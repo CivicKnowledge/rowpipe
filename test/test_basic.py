@@ -8,7 +8,6 @@ class TestBasic(unittest.TestCase):
 
     def test_table(self):
 
-        from rowpipe.codegen import make_row_processors
         from rowpipe.table import Table
 
         t = Table('foobar')
@@ -18,6 +17,8 @@ class TestBasic(unittest.TestCase):
         t.add_column('f1',datatype='float')
         t.add_column('f2', valuetype='float')
         t.add_column('f3', valuetype='measure/float')
+
+        self.assertEqual(6, len(list(t)))
 
         for c in t:
             print(c)
@@ -54,15 +55,17 @@ class TestBasic(unittest.TestCase):
                 for i in range(N):
                     yield i, 2*i
 
-        rp = RowProcessor(Source(), t, env)
+        rp = RowProcessor(Source(), t, env=env)
 
         count = 0
-        sum = 0
+        row_sum = 0
         with Timer() as t:
             for row in rp:
                 count += 1
-                sum += row[0]
+                row_sum += sum(row)
                 print(row)
+
+        self.assertEquals(495, row_sum)
 
         print('Rate=', float(N) / t.elapsed)
 
