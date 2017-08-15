@@ -15,7 +15,7 @@ class RowProcessor(Source):
     """
     """
 
-    def __init__(self, source, dest_table, source_headers=None, env=None):
+    def __init__(self, source, dest_table, source_headers=None, env=None, code_path=None):
 
         """
 
@@ -31,6 +31,7 @@ class RowProcessor(Source):
         self.source = source
         self.source_headers = source_headers if source_headers is not None else self.source.headers
         self.dest_table = dest_table
+        self.code_path = code_path
 
         self.env = exec_context()
 
@@ -57,12 +58,17 @@ class RowProcessor(Source):
         import hashlib
         import os
         import tempfile
+        from os.path import dirname, exists
 
-        tf = tempfile.NamedTemporaryFile(prefix="rowprocessor-",
-                                         suffix='{}.py'.format(hashlib.md5(self.code.encode('utf-8')).hexdigest()),
-                                         delete=False)
-        path = tf.name
-        tf.close()
+        if self.code_path:
+            path = self.code_path
+
+        else:
+            tf = tempfile.NamedTemporaryFile(prefix="rowprocessor-",
+                                             suffix='{}.py'.format(hashlib.md5(self.code.encode('utf-8')).hexdigest()),
+                                             delete=False)
+            path = tf.name
+            tf.close()
 
         if not os.path.exists(os.path.dirname(path)):
             os.makedirs(os.path.dirname(path))

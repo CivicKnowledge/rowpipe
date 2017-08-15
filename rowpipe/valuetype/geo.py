@@ -246,8 +246,6 @@ class ShapeValue(tuple, ValueType):
 
     def __new__(cls, v):
 
-        import shapely
-
         if v is None or v is NoneValue or v == '':
             return NoneValue
 
@@ -258,7 +256,12 @@ class ShapeValue(tuple, ValueType):
 
     @property
     def shape(self):
-        return self[0]
+        from shapely.wkt import loads
+        from shapely.geometry.base import BaseGeometry
+        if isinstance(self[0], BaseGeometry):
+            return self[0]
+        else:
+            return loads(self[0])
 
     def __str__(self):
         return str(self.shape)

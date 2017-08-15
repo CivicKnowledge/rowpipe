@@ -340,7 +340,9 @@ class IntValue(int, ValueType):
     def __new__(cls, v):
 
         try:
-            return int.__new__(cls, v)
+            # The pre-conversion to float handles cases like 1.0, which
+            # would throw an exception otherwize
+            return int.__new__(cls, float(v))
         except Exception as e:
 
             if v is None or v is NoneValue or v == '':
