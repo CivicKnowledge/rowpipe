@@ -109,9 +109,6 @@ class RowProcessor(Source):
 
         for i, row in enumerate(self.source):
 
-            if self.limit and i > self.limit:
-                break
-
             try:
                 rp = rp1
                 for proc in self.procs:
@@ -126,8 +123,6 @@ class RowProcessor(Source):
                 raise
 
         self.finish()
-
-
 
 
     def _get_row_gen(self):
