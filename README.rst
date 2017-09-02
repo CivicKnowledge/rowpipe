@@ -46,7 +46,34 @@ The RowProcessor is then run using this table definition, and an input generator
 Then, ``rp`` is a generator that returns ``RowProxy`` objects, which can be indexed as integers or by clolumn number:
 
 
+.. code-block:: python
+
     for row in rp:
         v1 = row['f1']
         v2 = row[3]
+
+The RowProcessor creates Python code files and executes them.
+
+Transforms can have several steps, seperated by ';'. The first, prefixes with a '^', initializes the value for the rest of the transforms. A transform that is prefixes with a '!' is executed on exceptions.  Transform functions can have a variable signature; the tranform processor matches argument names. Valid argument names are:
+
+- row. A rowProxy object for the input row. Allows access to any input row value
+- row_n. Row number.
+- scratch. A dict for temporary storage
+- errors. A defaultdict(set) for storing error reports for columns. Keys are column names
+- accumulator. A dict for accumulating value, such as sums.
+- pipe. Unused
+- bundle. Unused
+- source. Reference to the input generator that is generating rows
+- v. The input row value
+- header_s. The header for the column in the input row.
+- i_s. The index of the column in the input row
+- header_d. The header for the column in the output row.
+- i_d.  The index of the column in the output row
+
+Notes
+-----
+
+This repo still contains old code for Row Pipelines, which are in the ``pipeline.py`` file. These components can be combined to performd defined operations on rows, such as skipping rows based on a predicate, altering the number of rows, returning on ly the head or tail, etc. The code is not currently used ot tested.
+
+
 
