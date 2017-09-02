@@ -109,6 +109,8 @@ class RowProcessor(Source):
 
         for i, row in enumerate(self.source):
 
+
+
             try:
                 rp = rp1
                 for proc in self.procs:
