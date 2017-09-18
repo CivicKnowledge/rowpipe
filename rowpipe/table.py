@@ -6,43 +6,31 @@ Tables and columns
 
 """
 
+from rowgenerators import Table as RGTable
+from rowgenerators import Column as RGColumn
+from rowgenerators.exceptions import  SchemaError
+
 from rowpipe.valuetype import resolve_value_type
-from rowpipe.exceptions import SchemaError
-from tabulate import tabulate
 
-class Table(object):
+class Table(RGTable):
 
-    def __init__(self, name):
-        self.name = name
-        self.columns = []
-
-    def add_column(self, name, datatype=None, valuetype=None, transform=None):
-        self.columns.append(Column(name, datatype, valuetype, transform))
-
-    @property
-    def headers(self):
-        return [c.name for c in self.columns]
-
-
-    def __iter__(self):
-
-        for c in self.columns:
-            yield c
+    def add_column(self, name, datatype=None, valuetype=None, transform=None, width=None):
+        self.columns.append(Column(name, datatype, width, valuetype, transform))
 
     def __str__(self):
-
-        headers = 'name datatype valuetype transform'.split()
-        rows = [(c.name, c.datatype.__name__, c.valuetype.__name__, c.transform) for c in self.columns]
+        from tabulate import tabulate
+        headers = 'name datatype valuetype transform width'.split()
+        rows = [(c.name, c.datatype.__name__, c.valuetype.__name__, c.transform, c.width) for c in self.columns]
 
         return ('Table: {}\n'.format(self.name)) + tabulate(rows, headers)
 
+    pass
 
-class Column(object):
 
-    def __init__(self, name, datatype=None, valuetype=None, transform=None):
+class Column(RGColumn):
 
-        self.name = name
-        self.transform = transform
+
+    def __init__(self, name, datatype=None, width=None, valuetype=None, transform=None):
 
         if valuetype is not None and datatype is None:
             self.valuetype = resolve_value_type(valuetype)
@@ -55,9 +43,13 @@ class Column(object):
             raise SchemaError("Could not resovle type for for column '{}' datatype='{}' and valuetype='{}' "
                               .format(name, datatype, valuetype))
 
+        self.transform = transform
 
+        if width is not None and width != '':
+            width = int(width)
 
-        self.datatype = self.valuetype.python_type()
+        super().__init__(name, self.valuetype.python_type(), width)
+
 
     @property
     def expanded_transform(self):

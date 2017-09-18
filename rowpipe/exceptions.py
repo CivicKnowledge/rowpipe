@@ -57,5 +57,3 @@ class TooManyCastingErrors(RowPipeError):
 
 
 
-class SchemaError(RowPipeError):
-    pass

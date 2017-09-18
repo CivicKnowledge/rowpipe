@@ -70,6 +70,8 @@ Transforms can have several steps, seperated by ';'. The first, prefixes with a 
 - header_d. The header for the column in the output row.
 - i_d.  The index of the column in the output row
 
+... and there is a whole lot more. This documentation is woefully incomplete ...
+
 Notes
 -----
 
