@@ -127,28 +127,6 @@ def exec_context(**kwargs):
     # replacing it with a lambda prevents the param assignment
     localvars['randint'] = lambda a, b: random.randint(a, b)
 
-    # Save this stuff for when we re-integrate with bundles.
-    if False:
-        # Functions from the bundle
-        base = set(inspect.getmembers(Bundle, predicate=inspect.isfunction))
-        mine = set(inspect.getmembers(self.__class__, predicate=inspect.isfunction))
-
-        localvars.update({f_name: set_from(func, 'bundle') for f_name, func in mine - base})
-
-        # Bound methods. In python 2, these must be called referenced from the bundle, since
-        # there is a difference between bound and unbound methods. In Python 3, there is no differnce,
-        # so the lambda functions may not be necessary.
-        base = set(inspect.getmembers(Bundle, predicate=inspect.ismethod))
-        mine = set(inspect.getmembers(self.__class__, predicate=inspect.ismethod))
-
-        # Functions are descriptors, and the __get__ call binds the function to its object to make a bound method
-        localvars.update({f_name: set_from(func.__get__(self), 'bundle') for f_name, func in (mine - base)})
-
-    # Bundle module functions
-    if False:  # Load things that had been loaded with the bundle
-        module_entries = inspect.getmembers(sys.modules['ambry.build'], predicate=inspect.isfunction)
-        localvars.update({f_name: set_from(func, 'module') for f_name, func in module_entries})
-
     return localvars
 
 def build_caster_code(source, dest_table, source_headers, cache = None, pipe=None):
