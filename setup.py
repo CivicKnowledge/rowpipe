@@ -32,7 +32,7 @@ classifiers = [
 
 setup(
     name='rowpipe',
-    version='0.1.6',
+    version='0.1.7',
     description='Generate row data from a variety of file formats',
     long_description=readme,
     packages=find_packages(),
