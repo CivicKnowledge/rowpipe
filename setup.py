@@ -37,7 +37,7 @@ setup(
     long_description=readme,
     packages=find_packages(),
     install_requires=[
-        'six~=1.10.0', # Don't know what ~=, but need this so there isn't a conflict with the same version in fs
+        'six~=1.10.0', # Don't know what ~= means, but need this so there isn't a conflict with the same version in fs
         'fs >= 2',
         'tabulate',
         'decorator',
