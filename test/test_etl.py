@@ -1,7 +1,8 @@
 from __future__ import print_function
+
 import unittest
 
-from rowpipe.pipeline import Pipeline, Pipe, PrintRows, Sample, Head, SelectRows, Slice
+from old.pipeline import Pipeline, Pipe, PrintRows, Sample, Head, SelectRows, Slice
 
 
 def cast_str(v):

@@ -130,14 +130,17 @@ def exec_context(**kwargs):
     return localvars
 
 def build_caster_code(source, dest_table, source_headers, cache = None, pipe=None):
+
+    raise NotImplementedError('Possibly not used')
+
     from fs.wrapfs.lazyfs import LazyFS
     import os
     from rowpipe.codegen import make_row_processors
 
     if cache is None:
-        import tempfile
+
         from fs import fsopendir
-        #cache = fsopendir(tempfile.gettempdir())
+
         cache = fsopendir('/tmp/rowpipe', createdir=True)
 
     path = '/code/casters/{}.py'.format(source.name)
@@ -180,8 +183,8 @@ def make_row_processors(source_headers, dest_table, env=None):
     :return:
     """
 
-    import six
     import re
+    from itertools import zip_longest
 
     if env is None:
         env = exec_context()
@@ -191,7 +194,7 @@ def make_row_processors(source_headers, dest_table, env=None):
     # Convert the transforms to a list of list, with each list being a
     # segment of column transformations, and each segment having one entry per column.
 
-    transforms = list(six.moves.zip_longest(*[c.expanded_transform for c in dest_table]))
+    transforms = list(zip_longest(*[c.expanded_transform for c in dest_table]))
 
     row_processors = []
 

@@ -7,11 +7,10 @@ Row generating row processor
 
 """
 
-from rowgenerators import Source
 from rowpipe.codegen import make_row_processors, exec_context
 from collections import defaultdict
 
-class RowProcessor(Source):
+class RowProcessor(object):
     """
     """
 
@@ -26,7 +25,6 @@ class RowProcessor(Source):
         :return:
         """
 
-        super(RowProcessor, self).__init__(None)
 
         self.source = source
         self.source_headers = source_headers if source_headers is not None else self.source.headers

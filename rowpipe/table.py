@@ -6,8 +6,8 @@ Tables and columns
 
 """
 
-from rowgenerators import Table as RGTable
-from rowgenerators import Column as RGColumn
+from rowgenerators.table import Table as RGTable
+from rowgenerators.table import Column as RGColumn
 from rowgenerators.exceptions import  SchemaError
 
 from rowpipe.valuetype import resolve_value_type

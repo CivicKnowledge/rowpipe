@@ -11,8 +11,6 @@ import time
 
 from tabulate import tabulate
 
-import six
-from six import iteritems, itervalues, string_types, u
 
 from rowgenerators import RowProxy
 from rowpipe.util import qualified_class_name
@@ -205,33 +203,7 @@ class Pipe(object):
         return self.print_header()
 
 
-class RowProxyPipe(Pipe):
-    """A pipe that passes a RowProxy object into the process_body method"""
 
-    def __iter__(self):
-        from ambry_sources.sources.util import RowProxy
-        rg = iter(self._source_pipe)
-
-        if self.limit:
-            raise NotImplementedError()
-
-        self.headers = self.process_header(next(rg))
-
-        yield self.headers
-
-        header_len = len(self.headers)
-
-        rp = RowProxy(self.headers)
-
-        for row in rg:
-
-            row = self.process_body(rp.set_row(row)).row
-
-            if row:
-                assert len(row) == header_len, (self.headers, row, type(self))
-                yield row
-
-        self.finish()
 
 
 class DatafileSourcePipe(Pipe):
@@ -240,7 +212,7 @@ class DatafileSourcePipe(Pipe):
     def __init__(self, bundle, source):
         self.bundle = bundle
 
-        if isinstance(source, string_types):
+        if isinstance(source, str):
             source = bundle.source(source)
 
         self._source = source
@@ -377,41 +349,6 @@ class RowGenerator(object):
         self._bundle = bundle
         self._source = source
 
-
-class GeneratorSourcePipe(Pipe):
-    """Base class for a source pipe that implements it own iterator """
-
-    def __init__(self, bundle, source, gen):
-        from ..util import qualified_class_name
-
-        self.bundle = bundle
-        self._source = source
-        self._gen = gen
-
-        # file_name is for the pipeline logger, to generate a file
-        if self._source:
-            self.file_name = self._source.name
-        else:
-            self.file_name = qualified_class_name(self)
-
-    def __iter__(self):
-
-        self.start()
-
-        for row in self._gen:
-            yield row
-
-        self.finish()
-
-    def start(self):
-        pass
-
-    def finish(self):
-        pass
-
-    def __str__(self):
-        from ..util import qualified_class_name
-        return 'Generator {}'.format(qualified_class_name(self))
 
 
 class PartitionSourcePipe(Pipe):
@@ -621,7 +558,7 @@ class Slice(Pipe):
     @staticmethod
     def make_slicer(*args):
 
-        if len(args) == 1 and isinstance(args[0], string_types):
+        if len(args) == 1 and isinstance(args[0], str):
             args = Slice.parse(args[0])
 
         parts = []
@@ -744,7 +681,7 @@ class SelectRows(Pipe):
         :param pred: Callable or string. If a string, it must be just an expression which can take arguments source and row
         :return:
         """
-        if isinstance(pred, string_types):
+        if isinstance(pred, str):
             self.pred_str = pred
             self.pred = eval('lambda source, row: {}'.format(pred))
         else:
@@ -931,7 +868,7 @@ class MapSourceHeaders(Pipe):
 
     def process_header(self, headers):
 
-        is_generator = isinstance(self._source_pipe, GeneratorSourcePipe)
+        is_generator = False
         is_partition = isinstance(self._source_pipe, PartitionSourcePipe)
 
         if len(list(self.source.source_table.columns)) == 0:
@@ -2079,7 +2016,7 @@ class Pipeline(OrderedDict):
         super(Pipeline, self).__setattr__('stopped', False)
         super(Pipeline, self).__setattr__('sink', None)
 
-        for k, v in iteritems(kwargs):
+        for k, v in kwargs.items():
             if k not in self._group_names:
                 raise IndexError('{} is not a valid pipeline section name'.format(k))
 
@@ -2345,7 +2282,7 @@ class Pipeline(OrderedDict):
 
         for pipe in chain:
             segment_name = pipe.segment.name if hasattr(pipe, 'segment') else '?'
-            out.append(u('{}: {}').format(segment_name, pipe))
+            out.append('{}: {}'.format(segment_name, pipe))
 
         out.append('final: ' + str(self.final))
 

@@ -2,6 +2,7 @@
 
 from __future__ import print_function
 import unittest
+from rowpipe.table import Column
 
 class Test(unittest.TestCase):
 
@@ -62,7 +63,7 @@ class Test(unittest.TestCase):
 
     def test_text(self):
 
-        from ambry.valuetype import TextValue, cast_str, NoneValue
+        from rowpipe.valuetype import TextValue, cast_str, NoneValue
 
         x = cast_str(TextValue(None), 'foobar', {})
         self.assertEqual(None, x)
@@ -71,8 +72,8 @@ class Test(unittest.TestCase):
 
     def test_time(self):
 
-        from ambry.valuetype import  IntervalIsoVT, YearValue, YearRangeValue, resolve_value_type
-        from ambry.valuetype import DateValue, TimeValue
+        from rowpipe.valuetype import  IntervalIsoVT, YearValue, YearRangeValue, resolve_value_type
+        from rowpipe.valuetype import DateValue, TimeValue
 
         self.assertEqual(2000, YearValue('2000'))
 
@@ -121,7 +122,7 @@ class Test(unittest.TestCase):
 
     def test_geo(self):
 
-        from ambry.valuetype import GeoCensusVT, GeoAcsVT, GeoGvidVT, resolve_value_type, cast_unicode
+        from rowpipe.valuetype import GeoCensusVT, GeoAcsVT, GeoGvidVT, resolve_value_type, cast_unicode
         from geoid import acs, civick
 
         # Check the ACS Geoid directly
@@ -150,7 +151,7 @@ class Test(unittest.TestCase):
 
     def test_numbers(self):
         from collections import defaultdict
-        from ambry.valuetype import IntDimension, IntValue, FloatValue, FloatDimension, cast_float
+        from rowpipe.valuetype import IntDimension, IntValue, FloatValue, FloatDimension, cast_float
 
         errors = defaultdict(set)
 

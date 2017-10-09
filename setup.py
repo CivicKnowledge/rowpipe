@@ -32,20 +32,17 @@ classifiers = [
 
 setup(
     name='rowpipe',
-    version='0.1.7',
+    version='0.1.8',
     description='Generate row data from a variety of file formats',
     long_description=readme,
     packages=find_packages(),
     install_requires=[
-        'six~=1.10.0', # Don't know what ~= means, but need this so there isn't a conflict with the same version in fs
-        'fs >= 2',
         'tabulate',
         'decorator',
         'codegen',
         'geoid',
         'meta',
         'python-dateutil',
-        'tableintuit',
         'rowgenerators'],
     author="Eric Busboom",
     author_email='eric@civicknowledge.com',
