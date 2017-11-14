@@ -32,7 +32,7 @@ classifiers = [
 
 setup(
     name='rowpipe',
-    version='0.1.8',
+    version='0.2.0',
     description='Generate row data from a variety of file formats',
     long_description=readme,
     packages=find_packages(),
@@ -46,7 +46,7 @@ setup(
         'rowgenerators'],
     author="Eric Busboom",
     author_email='eric@civicknowledge.com',
-    url='https://github.com/CivicKnowledge/rowgenerator.git',
+    url='https://github.com/Metatab/rowgenerator.git',
     license='MIT',
     classifiers=classifiers
 )

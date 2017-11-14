@@ -428,7 +428,12 @@ class TimeValue(time, ValueType):
             return NoneValue
 
         try:
-            d = parser.parse(v)
+            if isinstance(v, time):
+                d = v
+            elif not isinstance(v, str):
+                d = parser.parse(str(v))
+            else:
+                d = parser.parse(v)
 
             return super(TimeValue, cls).__new__(cls, d.hour, d.minute, d.second)
         except TypeError:
@@ -450,7 +455,12 @@ class DateTimeValue(datetime, ValueType):
             return NoneValue
 
         try:
-            d = parser.parse(v)
+            if isinstance(v, datetime):
+                d = v
+            elif not isinstance(v, str):
+                d = parser.parse(str(v))
+            else:
+                d = parser.parse(v)
             return super(DateTimeValue, cls).__new__(cls, d.year, d.month, d.day, d.hour, d.minute, d.second)
 
         except TypeError:

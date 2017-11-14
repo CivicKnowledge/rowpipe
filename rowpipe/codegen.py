@@ -560,7 +560,10 @@ def rewrite_tg(env, tg_name, code):
     visitor = ReplaceTG(env, tg_name)
     assert visitor.tg_name
 
-    tree = visitor.visit(ast.parse(code))
+    try:
+        tree = visitor.visit(ast.parse(code))
+    except SyntaxError as e:
+        raise SyntaxError(str(e)+"\nIn code: \n"+code)
 
     if visitor.loc:
         loc = ' #' + visitor.loc
